@@ -10,4 +10,4 @@ test_data_dir = 'data/test'
 model = build_model()
 
 # then to train the model now
-hist
+history = train_model()
