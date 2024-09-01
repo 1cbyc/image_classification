@@ -7,3 +7,4 @@ val_data_dir = 'data/val'
 test_data_dir = 'data/test'
 
 # then building the model
+model = build_model()
