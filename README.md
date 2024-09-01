@@ -10,3 +10,4 @@
 i wont lie, this dataset is so large it's 2gb despite compressed to fit.
 ```
 7. i already fixed the whole data gathering, fucking 2gb worth of images to use. anyways, i want to write a script for preprocessing the images to help apply, resize and even normalize data augmentation 
+8. so i 
