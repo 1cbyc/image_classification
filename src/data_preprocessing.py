@@ -17,5 +17,6 @@ def data_augmentation():
         shear_range=0.2,
         zoom_range=0.2,
         horizontal_flip=True,
-        fill_mode=
+        fill_mode='nearest'
     )
+    return datagen
