@@ -11,3 +11,5 @@ model = build_model()
 
 # then to train the model now
 history = train_model(model, train_data_dir, val_data_dir, batch_size=32, epochs=10)
+
+# now time to plot training metrics
