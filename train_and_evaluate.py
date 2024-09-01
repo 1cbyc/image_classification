@@ -13,4 +13,7 @@ model = build_model()
 history = train_model(model, train_data_dir, val_data_dir, batch_size=32, epochs=10)
 
 # now time to plot training metrics
-plot_metrics()
+plot_metrics(history)
+
+# then i will evaluate the model
+eval
