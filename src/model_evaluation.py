@@ -10,4 +10,4 @@ def plot_metrics(history):
     plt.show()
 
 def evaluate_model(model, test_data_dir):
-    test_data
+    test_datagen 
