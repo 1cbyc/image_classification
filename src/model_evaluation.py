@@ -14,4 +14,4 @@ def plot_metrics(history):
 
 def evaluate_model(model, test_data_dir):
     test_datagen = ImageDataGenerator(rescale=1.0/255)
-    test_generator
+    test_generator = test_datagen.flow
