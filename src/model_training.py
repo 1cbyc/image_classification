@@ -6,6 +6,8 @@ from tensorflow.keras.optimizers import Adam
 # to train the model, i added these calls
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.python.eager.profiler_client import monitor
+
 
 def build_model(input_shape=(224, 224, 3)):
     base_model = VGG16(weights='imagenet', include_top=False, input_shape=input_shape)
@@ -29,7 +31,7 @@ def train_model(model, train_data_dir, val_data_dir, batch_size=32, epochs=10):
     train_generator = datagen.flow_from_directory(train_data_dir, target_size=(224, 224), batch_size=batch_size, class_mode='binary')
     val_generator = datagen.flow_from_directory(val_data_dir, target_size=(224, 224), batch_size=batch_size, class_mode='binary')
 
-    checkpoint = ModelCheckpoint('best_model.')
+    checkpoint = ModelCheckpoint('best_model.h5', monitor())
 
 
 # what i did here is used the vgg16 model as a base and added custom layers on top for binary classification
