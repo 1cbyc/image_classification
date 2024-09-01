@@ -18,3 +18,4 @@ def evaluate_model(model, test_data_dir):
     test_generator = test_datagen.flow_from_directory(test_data_dir, target_size=(224, 224), batch_size=32, class_mode='binary', shuffle=False)
 
     y_pred = model.predict(test_generator)
+    y_pred =
