@@ -19,3 +19,5 @@ def evaluate_model(model, test_data_dir):
 
     y_pred = model.predict(test_generator)
     y_pred = np.where(y_pred > 0.5, 1, 0)
+
+    print()
