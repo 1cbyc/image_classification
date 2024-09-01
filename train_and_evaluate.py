@@ -20,4 +20,4 @@ evaluate_model(model, test_data_dir)
 
 # then save the trained model
 mode.save('pneumonia_detection_model.h5')
-print("Model")
+print("Saved your Model")
