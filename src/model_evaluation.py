@@ -7,3 +7,4 @@ def plot_metrics(history):
     plt.xlabel('Epoch')
     plt.ylabel('Accuracy')
     plt.legend()
+    plt.show()
