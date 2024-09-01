@@ -9,4 +9,5 @@ def plot_metrics(history):
     plt.legend()
     plt.show()
 
-def evaluate_model(model, test)
+def evaluate_model(model, test_data_dir):
+    
