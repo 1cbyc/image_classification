@@ -26,7 +26,7 @@ def build_model(input_shape=(224, 224, 3)):
 def train_model(model, train_data_dir, val_data_dir, batch_size=32, epochs=10):
     datagen = ImageDataGenerator(rescale=1.0/255, validation_split=0.2)
 
-    train_generator = datagen.flow_from_directory(train_data_dir)
+    train_generator = datagen.flow_from_directory(train_data_dir, target_size=())
 
 
 # what i did here is used the vgg16 model as a base and added custom layers on top for binary classification
