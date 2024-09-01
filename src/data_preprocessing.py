@@ -9,4 +9,5 @@ def preprocess_image(image_path, target_size=(224, 224)):
     image = image / 255.0 # for me to normalize the image
     return image
 
-def data_augmentation()
+def data_augmentation():
+    datagen = ImageDataGenerator
