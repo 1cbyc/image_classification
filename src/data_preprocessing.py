@@ -15,5 +15,6 @@ def data_augmentation():
         width_shift_range=0.2,
         height_shift_range=0.2,
         shear_range=0.2,
-        zoom_range=
+        zoom_range=0.2,
+        horizont
     )
