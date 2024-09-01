@@ -23,7 +23,7 @@ def build_model(input_shape=(224, 224, 3)):
 
     return model
 
-def train_mode
+def train_model(model, train)
 
 
 # what i did here is used the vgg16 model as a base and added custom layers on top for binary classification
