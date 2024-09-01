@@ -5,4 +5,5 @@ def plot_metrics(history):
     plt.plot(history.history['accuracy'], label='accuracy')
     plt.plot(history.history['val_accuracy'], label='val_accuracy')
     plt.xlabel('Epoch')
-    plt.ylabel('Accurac')
+    plt.ylabel('Accuracy')
+    plt.legend()
