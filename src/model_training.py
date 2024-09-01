@@ -7,7 +7,6 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import ModelCheckpoint
 
-
 def build_model(input_shape=(224, 224, 3)):
     base_model = VGG16(weights='imagenet', include_top=False, input_shape=input_shape)
 
@@ -23,6 +22,8 @@ def build_model(input_shape=(224, 224, 3)):
                   metrics=['accuracy'])
 
     return model
+
+
 
 
 # what i did here is used the vgg16 model as a base and added custom layers on top for binary classification
