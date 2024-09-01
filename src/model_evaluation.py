@@ -1,3 +1,5 @@
+from tkinter import Image
+
 import matplotlib.pyplot as plt
 from sklearn.metrics import  classification_report, confusion_matrix
 
@@ -10,4 +12,4 @@ def plot_metrics(history):
     plt.show()
 
 def evaluate_model(model, test_data_dir):
-    test_datagen 
+    test_datagen = Image
