@@ -31,7 +31,7 @@ def train_model(model, train_data_dir, val_data_dir, batch_size=32, epochs=10):
 
     checkpoint = ModelCheckpoint('best_model.h5', monitor='val_loss', save_best_only=True)
 
-    history = model.fit(train_generator, epochs=epochs, validation_data=val_generator)
+    history = model.fit(train_generator, epochs=epochs, validation_data=val_generator, callbacks=)
 
 
 # what i did here is used the vgg16 model as a base and added custom layers on top for binary classification
