@@ -1,4 +1,5 @@
-from tensorflow.keras.applications import VGG16
+#to build the model i used this calls
+# from tensorflow.keras.applications import VGG16
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.optimizers import Adam
