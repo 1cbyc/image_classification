@@ -1,0 +1,23 @@
+image_classification/
+├── data/
+│   ├── train/
+│   ├── test/
+│   └── val/
+├── notebooks/
+│   └── model_development.ipynb
+├── src/
+│   ├── data_preprocessing.py
+│   ├── model_training.py
+│   ├── model_evaluation.py
+│   └── inference.py
+├── static/
+│   └── (for web deployment)
+├── templates/
+│   └── (for web deployment)
+├── tests/
+│   ├── test_data_preprocessing.py
+│   ├── test_model_training.py
+│   └── test_model_evaluation.py
+├── requirements.txt
+├── README.md
+└── app.py (for web deployment)

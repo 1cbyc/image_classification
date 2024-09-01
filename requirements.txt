@@ -1,6 +1,6 @@
 tensorflow
 keras
-pytorch
+torch
 opencv-python
 matplotlib
 seaborn
