@@ -4,4 +4,4 @@ from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.optimizers import Adam
 
 def build_model(input_shape=(224, 224, 3)):
-    base_model
+    base_model = VGG16(weights='imagenet')
