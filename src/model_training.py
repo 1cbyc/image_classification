@@ -8,5 +8,6 @@ def build_model(input_shape=(224, 224, 3)):
 
     model = Sequential([
         base_model,
-        
+        Flatten(),
+        Dense
     ])
