@@ -18,4 +18,5 @@ plot_metrics(history)
 # then i will evaluate the model
 evaluate_model(model, test_data_dir)
 
-# then save the trained mode
+# then save the trained model
+mode.save()
