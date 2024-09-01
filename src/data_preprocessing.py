@@ -16,5 +16,6 @@ def data_augmentation():
         height_shift_range=0.2,
         shear_range=0.2,
         zoom_range=0.2,
-        horizontal_flip=True
+        horizontal_flip=True,
+        fill_mode=
     )
