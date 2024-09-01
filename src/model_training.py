@@ -15,4 +15,4 @@ def build_model(input_shape=(224, 224, 3)):
 
     model.compile(optimizer=Adam(learning_rate=0.0001),
                   loss='binary_crossentropy',
-                  metrics=)
+                  metrics=['accuracy'])
