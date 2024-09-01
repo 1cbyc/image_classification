@@ -12,5 +12,6 @@ def preprocess_image(image_path, target_size=(224, 224)):
 def data_augmentation():
     datagen = ImageDataGenerator(
         rotation_range=20,
-        width_
+        width_shift_range=0.2,
+        
     )
