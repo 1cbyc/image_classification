@@ -1,1 +1,1 @@
-# trying to build a method to classify diseases
+# trying to build a method to identify diseases by the way they look in xrays
