@@ -8,3 +8,6 @@ test_data_dir = 'data/test'
 
 # then building the model
 model = build_model()
+
+# then to train the model now
+hist
