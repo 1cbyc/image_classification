@@ -13,4 +13,5 @@ def plot_metrics(history):
     plt.show()
 
 def evaluate_model(model, test_data_dir):
-    test_datagen = ImageDataGenerator(rescale)
+    test_datagen = ImageDataGenerator(rescale=1.0/255)
+    
