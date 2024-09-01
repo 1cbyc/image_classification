@@ -5,4 +5,4 @@
 3. since all that is done, i setup the method to commit my progress as it comes
 4. then i mapped the directory for the project so i will start creating the subfolders for the project
 5. having done that, i want to use an existing medical imaging dataset i found on kaggle. so let me use the pneumonia detection dataset first. intend to use this chest xray images for pneumonia: https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
-6. 
+6. currently waiting for the download, so i can place the data in the /train, /test and /val folders
