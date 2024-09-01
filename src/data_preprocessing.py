@@ -3,4 +3,4 @@ import os
 import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-def preprocess_
+def preprocess_image(image_path, target_size)
