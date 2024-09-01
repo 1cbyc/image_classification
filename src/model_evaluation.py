@@ -21,4 +21,4 @@ def evaluate_model(model, test_data_dir):
     y_pred = np.where(y_pred > 0.5, 1, 0)
 
     print(classification_report(test_generator.classes, y_pred))
-    print
+    print(confusion_matrix(test_generator))
