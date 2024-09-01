@@ -8,3 +8,5 @@ def plot_metrics(history):
     plt.ylabel('Accuracy')
     plt.legend()
     plt.show()
+
+def evaluate
