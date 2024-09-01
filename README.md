@@ -6,4 +6,7 @@
 4. then i mapped the directory for the project so i will start creating the subfolders for the project
 5. having done that, i want to use an existing medical imaging dataset i found on kaggle. so let me use the pneumonia detection dataset first. intend to use this chest xray images for pneumonia: https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
 6. currently waiting for the download, so i can place the data in the `data/train`, `data/test` and `data/val` folders of the project. so i can have all sanple images of the identifiers for the diseases ready
+```markdown
+i wont lie, this dataset is so large it's 2gb despite compressed to fit.
+```
 7. 
