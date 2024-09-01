@@ -1,0 +1,9 @@
+tensorflow==2.13.0
+keras
+pytorch
+opencv-python
+matplotlib
+seaborn
+scikit-learn
+numpy
+pandas
