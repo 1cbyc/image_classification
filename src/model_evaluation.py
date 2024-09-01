@@ -3,7 +3,7 @@ from tkinter import Image
 import matplotlib.pyplot as plt
 from keras.src.legacy.preprocessing.image import ImageDataGenerator
 from scipy.special import y_pred
-from sklearn.metrics import  classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
 def plot_metrics(history):
     plt.plot(history.history['accuracy'], label='accuracy')
