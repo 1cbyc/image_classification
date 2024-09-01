@@ -10,5 +10,7 @@ def build_model(input_shape=(224, 224, 3)):
         base_model,
         Flatten(),
         Dense(128, activation='relu'),
-        Dense(1, activation='sigmoid') # clear binary classification 
+        Dense(1, activation='sigmoid') # clear binary classification (if pneumonia or not)
     ])
+
+    
