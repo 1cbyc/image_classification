@@ -3,4 +3,4 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Flatten
 from tensorflow.keras.optimizers import Adam
 
-def build_model
+def build_model(input_shape=())
