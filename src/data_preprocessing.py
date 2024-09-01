@@ -14,5 +14,6 @@ def data_augmentation():
         rotation_range=20,
         width_shift_range=0.2,
         height_shift_range=0.2,
-        shear_range=
+        shear_range=0.2,
+        zoom
     )
