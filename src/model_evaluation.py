@@ -22,3 +22,4 @@ def evaluate_model(model, test_data_dir):
 
     print(classification_report(test_generator.classes, y_pred))
     print(confusion_matrix(test_generator.classes, y_pred))
+# this way i can generate performance metrics and plot the accuracy trends over training epochs
