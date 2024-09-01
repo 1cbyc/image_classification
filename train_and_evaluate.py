@@ -19,4 +19,4 @@ plot_metrics(history)
 evaluate_model(model, test_data_dir)
 
 # then save the trained model
-mode.save()
+mode.save('pneumonia_detection_model.h5')
