@@ -18,3 +18,4 @@ def build_model(input_shape=(224, 224, 3)):
                   metrics=['accuracy'])
 
     return model
+# what i did here is used the v
