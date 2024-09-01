@@ -29,7 +29,9 @@ def train_model(model, train_data_dir, val_data_dir, batch_size=32, epochs=10):
     train_generator = datagen.flow_from_directory(train_data_dir, target_size=(224, 224), batch_size=batch_size, class_mode='binary')
     val_generator = datagen.flow_from_directory(val_data_dir, target_size=(224, 224), batch_size=batch_size, class_mode='binary')
 
-    checkpoint = ModelCheckpoint('best_model.h5', monitor='val_loss', save_best_only)
+    checkpoint = ModelCheckpoint('best_model.h5', monitor='val_loss', save_best_only=True)
+
+    
 
 
 # what i did here is used the vgg16 model as a base and added custom layers on top for binary classification
