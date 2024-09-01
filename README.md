@@ -4,4 +4,4 @@
 2. once my env is setup, i installed the requirements i decided on earlier `pip install -r requirements.txt`
 3. since all that is done, i setup the method to commit my progress as it comes
 4. then i mapped the directory for the project so i will start creating the subfolders for the project
-5. having done that, i want to use an existing medical imaging dataset i found on kaggle. so let me use the pneumonia detection dataset first. intend to use this: https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia&ved=2ahUKEwiejf6m-KGIAxVygf0HHeJ-GDsQFnoECBMQAQ&usg=AOvVaw0W89tn_oarz-tKbs1XrtOX
+5. having done that, i want to use an existing medical imaging dataset i found on kaggle. so let me use the pneumonia detection dataset first. intend to use this: https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
