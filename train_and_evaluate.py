@@ -16,4 +16,6 @@ history = train_model(model, train_data_dir, val_data_dir, batch_size=32, epochs
 plot_metrics(history)
 
 # then i will evaluate the model
-eval
+evaluate_model(model, test_data_dir)
+
+# then save the trained mode
