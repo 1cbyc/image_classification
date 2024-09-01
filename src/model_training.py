@@ -13,4 +13,4 @@ def build_model(input_shape=(224, 224, 3)):
         Dense(1, activation='sigmoid') # clear binary classification (if pneumonia or not)
     ])
 
-    
+    model.compile(optim)
