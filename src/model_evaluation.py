@@ -9,4 +9,4 @@ def plot_metrics(history):
     plt.legend()
     plt.show()
 
-def evaluate
+def evaluate_model(model, test)
