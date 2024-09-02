@@ -24,4 +24,5 @@ def evaluate_model(model, test_data_generator):
     
     # about confusion matrix
     cm = confusion_matrix(y_true, y_pred_binary)
-    print("Confusion M")
+    print("Confusion Matrix:")
+    
