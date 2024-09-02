@@ -62,4 +62,4 @@ def plot_metrics(history):
     plt.legend(['Train', 'Val'], loc='upper left')
 
     plt.show()
-# that said, we'd calculate accuracy, precision, recall and f1 score using scikit-learn functions
+# that said, we'd calculate accuracy, precision, recall and f1 score using scikit-learn functions. also, 
