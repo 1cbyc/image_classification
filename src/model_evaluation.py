@@ -57,4 +57,4 @@ def plot_metrics(history):
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title('Model Loss')
-    
+    plt.ylabel('Loss')
