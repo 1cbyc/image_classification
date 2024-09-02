@@ -52,4 +52,5 @@ def plot_metrics(history):
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Val'], loc='upper left')
 
-    # plot training 
+    # will do plot training and validation loss values
+    
