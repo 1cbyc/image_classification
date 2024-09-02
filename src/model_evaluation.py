@@ -27,4 +27,4 @@ def evaluate_model(model, test_data_generator):
     print("Confusion Matrix:")
     print(cm)
 
-    # 
+    # ROC Curve and AUC
