@@ -40,4 +40,5 @@ def evaluate_model(model, test_data_generator):
     plt.legend(loc="lower right")
     plt.show()
 
-def plot_
+def plot_metrics(history):
+    
