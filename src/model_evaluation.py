@@ -56,3 +56,4 @@ def plot_metrics(history):
     plt.subplot(1, 2, 2)
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
+    plt.title
