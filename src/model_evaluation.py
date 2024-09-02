@@ -41,4 +41,5 @@ def evaluate_model(model, test_data_generator):
     plt.show()
 
 def plot_metrics(history):
-    # plot training and valuation accuracy
+    # plot training and valuation accuracy values
+    
