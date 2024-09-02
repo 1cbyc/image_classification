@@ -18,4 +18,5 @@ def evaluate_model(model, test_data_generator):
     f1 = f1_score(y_true, y_pred_binary)
 
     print(f"Accuracy: {accuracy:.4f}")
-    print(f"Precision: {}")
+    print(f"Precision: {precision:.4f}")
+    
