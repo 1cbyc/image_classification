@@ -28,4 +28,5 @@ def evaluate_model(model, test_data_generator):
     print(cm)
 
     # ROC Curve and AUC
-    fpr, tpr, _ = roc_curve(y_true)
+    fpr, tpr, _ = roc_curve(y_true, y_pred)
+    roc
