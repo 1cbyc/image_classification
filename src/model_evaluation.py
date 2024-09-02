@@ -49,4 +49,4 @@ def plot_metrics(history):
     plt.plot(history.history['val_accuracy'])
     plt.title('Model Accuracy')
     plt.ylabel('Accuracy')
-    plt.
+    plt.xlabel
