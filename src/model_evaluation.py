@@ -42,3 +42,4 @@ def evaluate_model(model, test_data_generator):
 
 def plot_metrics(history):
     # this would be for plot training and validation accuracy values
+    
