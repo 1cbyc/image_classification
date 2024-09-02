@@ -11,4 +11,5 @@ def evaluate_model(model, test_data_generator):
     y_pred_binary = np.where(y_pred > 0.5, 1, 0)
 
     # time to calculate the metrics
-    accuracy = accuracy_score(y)
+    accuracy = accuracy_score(y_true, y_pred_binary)
+    
