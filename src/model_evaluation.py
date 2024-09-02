@@ -2,4 +2,4 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_curve, auc
 import numpy as np
 
-def evaluate_model(model)
+def evaluate_model(model, test_data_genera)
