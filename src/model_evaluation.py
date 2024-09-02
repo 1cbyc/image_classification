@@ -50,4 +50,5 @@ def plot_metrics(history):
     plt.title('Model Accuracy')
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
-    plt.legend(['Train', 'Val'], loc)
+    plt.legend(['Train', 'Val'], loc='upper left')
+    
