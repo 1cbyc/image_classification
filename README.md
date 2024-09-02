@@ -21,4 +21,6 @@ i wont lie, this dataset is so large it's 2gb despite compressed to fit.
 16. making matters worse, this thing no wan use .h5; it wants .keras. which kind wahala be this bai. it is like i will go and change stuff in my train_model function from `checkpoint = ModelCheckpoint('best_model.h5', monitor='val_loss', save_best_only=True)` to `checkpoint = ModelCheckpoint('best_model.keras', monitor='val_loss', save_best_only=True)`
 17. finally o, result don show:
 ![Screenshot of my successful run so far](readme-images/Screenshot-2024-09-02-at-9-06-28 PM.png)
+![Screenshot of my successful run so far](readme-images/Screenshot-2024-09-02-at-9-06-28 PM.png)
+
 18. 
