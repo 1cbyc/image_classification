@@ -46,3 +46,4 @@ def plot_metrics(history):
 
     plt.subplot(1, 2, 3)
     plt.plot(history.history['accuracy'])
+    plt.plot
