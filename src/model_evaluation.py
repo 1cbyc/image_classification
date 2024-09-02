@@ -59,4 +59,4 @@ def plot_metrics(history):
     plt.title('Model Loss')
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
-    
+    plt.legend(['Train'])
