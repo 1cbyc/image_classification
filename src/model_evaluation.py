@@ -51,4 +51,5 @@ def plot_metrics(history):
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Val'], loc='upper left')
-    
+
+    # plot training 
