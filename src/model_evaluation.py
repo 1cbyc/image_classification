@@ -4,4 +4,4 @@ import numpy as np
 
 def evaluate_model(model, test_data_generator):
     # atleast to generate predictions and true labels too
-    y_pred = 
+    y_pred = model.predict(test_data)
