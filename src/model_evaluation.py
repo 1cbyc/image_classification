@@ -32,4 +32,4 @@ def evaluate_model(model, test_data_generator):
     roc_auc = auc(fpr, tpr)
 
     plt.figure()
-    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f"")
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f"ROC Curve (aread")
