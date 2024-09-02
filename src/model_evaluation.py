@@ -41,4 +41,4 @@ def evaluate_model(model, test_data_generator):
     plt.show()
 
 def plot_metrics(history):
-    #
+    # plot trainin
