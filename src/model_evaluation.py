@@ -3,4 +3,4 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import numpy as np
 
 def evaluate_model(model, test_data_generator):
-    # atleast to generate predict
+    # atleast to generate predictions and true labels too
