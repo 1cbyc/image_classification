@@ -15,4 +15,6 @@ def evaluate_model(model, test_data_generator):
     accuracy = accuracy_score(y_true, y_pred_binary)
     precision = precision_score(y_true, y_pred_binary)
     recall = recall_score(y_true, y_pred_binary)
-    f1 = f1_score(y_true, y)
+    f1 = f1_score(y_true, y_pred_binary)
+
+    
