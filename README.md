@@ -14,6 +14,6 @@ i wont lie, this dataset is so large it's 2gb despite compressed to fit.
 9. i want to work on building and training the model. but i am having worries if i should build the CNN model from scratch or i should just transfer learning with a pre-trained model like ResNet or VGG16.
 10. i decided to just transfer learning with a pre-trained model, but i am using vgg16. what i did was simply used the vgg16 model as a base and added custom layers on top for binary classification in `src/model_training.py`
 11. let me now train the model since i have the model already. will just use the data i imported.
-12. i am done building the model and training the model, i need to visualize the model's performance metrics at this point at least, to decide the accuracy, precion and get to plot it over all training epochs hehe.
+12. i am done building the model and training the model, i need to visualize the model's performance metrics at this point at least, to decide the accuracy, precision and get to plot it over all training epochs hehe.
 13. wo! let me just write a script to tain and evaluate the model, let me say: `train_and_evaluate.py`
 14. oh shit! i think i just messed up the whole thing. let me create another model evaluation script. i made wrong twists with the import statements especially the fact that i should not have import y_pred from `scipy.special` so let me fix that.
