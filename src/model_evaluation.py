@@ -54,4 +54,4 @@ def plot_metrics(history):
 
     # will do plot training and validation loss values
     plt.subplot(1, 2, 2)
-    plt.plot(history)
+    plt.plot(history.history[])
