@@ -17,4 +17,4 @@ def evaluate_model(model, test_data_generator):
     recall = recall_score(y_true, y_pred_binary)
     f1 = f1_score(y_true, y_pred_binary)
 
-    
+    print(f"")
