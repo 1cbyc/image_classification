@@ -53,4 +53,5 @@ def plot_metrics(history):
     plt.legend(['Train', 'Val'], loc='upper left')
 
     # will do plot training and validation loss values
+    plt.subplot(1, 2, 2)
     
