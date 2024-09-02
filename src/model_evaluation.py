@@ -60,3 +60,5 @@ def plot_metrics(history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Train', 'Val'], loc='upper left')
+
+    plt.show
