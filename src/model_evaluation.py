@@ -45,3 +45,4 @@ def plot_metrics(history):
     plt.figure(figsize=(12, 4))
 
     plt.subplot(1, 2, 3)
+    plt.plot
