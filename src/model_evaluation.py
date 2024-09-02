@@ -23,3 +23,4 @@ def evaluate_model(model, test_data_generator):
     print(f"F1 Score: {f1:.4f}")
     
     # about confusion matrix
+    
