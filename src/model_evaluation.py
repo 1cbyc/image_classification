@@ -10,4 +10,4 @@ def evaluate_model(model, test_data_generator):
     # then convert predictions to binary labels (let's assume it is binary classification)
     y_pred_binary = np.where(y_pred > 0.5, 1, 0)
 
-    # calculate
+    # time to calculate the metrics
