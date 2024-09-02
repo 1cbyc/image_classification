@@ -14,4 +14,4 @@ def evaluate_model(model, test_data_generator):
     # time to calculate the metrics
     accuracy = accuracy_score(y_true, y_pred_binary)
     precision = precision_score(y_true, y_pred_binary)
-    reca
+    recall = recall_score(y)
