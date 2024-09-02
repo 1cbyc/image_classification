@@ -19,6 +19,6 @@ i wont lie, this dataset is so large it's 2gb despite compressed to fit.
 14. oh shit! i think i just messed up the whole thing. let me create another model evaluation script. i made wrong twists with the import statements especially the fact that i should not have import y_pred from `scipy.special` so let me fix that.
 15. since everything wan stress me, i downloaded weights online and put it in `weights/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5`. but then, now i need to change the whole base  model in the build model function to work with path instead of direct call.
 16. making matters worse, this thing no wan use .h5; it wants .keras. which kind wahala be this bai. it is like i will go and change stuff in my train_model function from `checkpoint = ModelCheckpoint('best_model.h5', monitor='val_loss', save_best_only=True)` to `checkpoint = ModelCheckpoint('best_model.keras', monitor='val_loss', save_best_only=True)`
-17. finally o, resut don show:
-![Screenshot of my successful run so far](readme-images/Screenshot 2024-09-02 at 9.06.28 PM.png)
+17. finally o, result don show:
+![Screenshot of my successful run so far](readme-images/Screenshot-2024-09-02-at-9-06-28 PM.png)
 18. 
