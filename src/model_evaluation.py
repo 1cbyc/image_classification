@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from scipy.constants import precision
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_curve, auc
 import numpy as np
 
@@ -12,4 +13,4 @@ def evaluate_model(model, test_data_generator):
 
     # time to calculate the metrics
     accuracy = accuracy_score(y_true, y_pred_binary)
-    
+    precision = pre
