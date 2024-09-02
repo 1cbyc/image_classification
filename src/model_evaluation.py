@@ -62,4 +62,4 @@ def plot_metrics(history):
     plt.legend(['Train', 'Val'], loc='upper left')
 
     plt.show()
-# that said, we'd calculate accuracy, precision, recall and f1 score using scikit-learn functions. also, would display th confusion matrix to visualize the performance too. however, this will plot the roc curve and calculate the area 
+# that said, we'd calculate accuracy, precision, recall and f1 score using scikit-learn functions. also, would display th confusion matrix to visualize the performance too. however, this will plot the roc curve and calculate the area under the curve (it is called auc) to assess the model
