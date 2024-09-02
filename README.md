@@ -17,4 +17,4 @@ i wont lie, this dataset is so large it's 2gb despite compressed to fit.
 12. i am done building the model and training the model, i need to visualize the model's performance metrics at this point at least, to decide the accuracy, precision and get to plot it over all training epochs hehe.
 13. wo! let me just write a script to tain and evaluate the model, let me say: `train_and_evaluate.py`
 14. oh shit! i think i just messed up the whole thing. let me create another model evaluation script. i made wrong twists with the import statements especially the fact that i should not have import y_pred from `scipy.special` so let me fix that.
-15. since everything wan stress me, i downloaded weight
+15. since everything wan stress me, i downloaded weights online and put it in 
