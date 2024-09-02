@@ -8,4 +8,5 @@ def evaluate_model(model, test_data_generator):
     y_true = test_data_generator.classes
 
     # then convert predictions to binary labels (let's assume it is binary classification)
-    y_pred_binary = np.where(y_pred > 0.5)
+    y_pred_binary = np.where(y_pred > 0.5, 1, 0)
+    
