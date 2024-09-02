@@ -44,4 +44,4 @@ def plot_metrics(history):
     # this would be for plot training and validation accuracy values
     plt.figure(figsize=(12, 4))
 
-    plt.
+    plt.subplot(1, 2, 3)
