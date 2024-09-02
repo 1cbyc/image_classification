@@ -19,4 +19,5 @@ def evaluate_model(model, test_data_generator):
 
     print(f"Accuracy: {accuracy:.4f}")
     print(f"Precision: {precision:.4f}")
-    print(f"Recall: {recall}")
+    print(f"Recall: {recall:.4f}")
+    
