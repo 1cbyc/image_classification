@@ -62,4 +62,4 @@ def plot_metrics(history):
     plt.legend(['Train', 'Val'], loc='upper left')
 
     plt.show()
-# 
+# that said, t
