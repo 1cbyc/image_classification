@@ -33,3 +33,4 @@ def evaluate_model(model, test_data_generator):
 
     plt.figure()
     plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.4f})')
+    
