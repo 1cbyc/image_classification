@@ -9,7 +9,7 @@ import json
 import time
 import sys
 
-BASE_URL = "http://localhost:5000/api"
+BASE_URL = "http://localhost:5001/api"
 
 def test_health():
     """Test health check endpoint"""

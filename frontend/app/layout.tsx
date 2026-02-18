@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Manrope, Poppins } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
 const manrope = Manrope({
@@ -44,7 +43,7 @@ export default function RootLayout({
       <body className={`${manrope.variable} ${poppins.variable} font-sans antialiased`}>
         <div className="noise-overlay" aria-hidden="true" />
         {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        {/* Vercel Analytics removed for self-hosting */}
       </body>
     </html>
   )
