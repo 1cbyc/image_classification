@@ -1,28 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Medical cross in a circle - clean, professional health icon -->
-  <defs>
-    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  
-  <!-- Background circle -->
-  <circle cx="50" cy="50" r="45" fill="url(#gradient)" stroke="#1e40af" stroke-width="2"/>
-  
-  <!-- Medical cross -->
-  <rect x="45" y="30" width="10" height="40" rx="2" fill="white"/>
-  <rect x="30" y="45" width="40" height="10" rx="2" fill="white"/>
-  
-  <!-- Optional: Heart pulse line (subtle) -->
-  <path d="M30,65 Q35,60 40,65 T50,60 T60,65 T70,60 T75,65" 
-        fill="none" 
-        stroke="white" 
-        stroke-width="3" 
-        stroke-linecap="round"
-        opacity="0.8"/>
-  
-  <!-- Optional: Stethoscope circles -->
-  <circle cx="35" cy="70" r="3" fill="white" opacity="0.7"/>
-  <circle cx="65" cy="70" r="3" fill="white" opacity="0.7"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Professional healthcare icon from Flaticon -->
+  <title>ReluRay Medical AI</title>
+  <desc>Healthcare and medical analysis icon</desc>
+  <style>
+    .health-icon { fill: #3b82f6; }
+    @media (prefers-color-scheme: dark) {
+      .health-icon { fill: #60a5fa; }
+    }
+  </style>
+  <path class="health-icon" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"/>
 </svg>
