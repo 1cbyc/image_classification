@@ -150,6 +150,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json",
 )
 
 # Add security headers middleware
@@ -427,10 +428,10 @@ async def predict(request: PredictRequest):
         
         # Determine result
         if confidence > 0.5:
-            result = 'Pneumonia'
+            result = 'pneumonia'
             final_confidence = confidence
         else:
-            result = 'Normal'
+            result = 'normal'
             final_confidence = 1 - confidence
         
         total_time = time.time() - start_time
