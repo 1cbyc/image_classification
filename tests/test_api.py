@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-Test script for ReluRay API
+STANDALONE TEST SCRIPT for ReluRay API
+NOT a pytest module - run directly with: python tests/test_api.py
+
 Tests API endpoints without requiring TensorFlow or model file
+WARNING: This file returns booleans and uses sys.exit() - do not import as pytest module
 """
 
 import requests
@@ -11,8 +14,8 @@ import sys
 
 BASE_URL = "http://localhost:5001/api"
 
-def test_health():
-    """Test health check endpoint"""
+def check_health():
+    """Test health check endpoint (not a pytest test)"""
     print("🔍 Testing /api/health...")
     try:
         response = requests.get(f"{BASE_URL}/health", timeout=5)
@@ -26,8 +29,8 @@ def test_health():
         print(f"   ❌ Error: {e}")
         return False
 
-def test_info():
-    """Test model info endpoint"""
+def check_info():
+    """Test model info endpoint (not a pytest test)"""
     print("\n🔍 Testing /api/info...")
     try:
         response = requests.get(f"{BASE_URL}/info", timeout=5)
@@ -38,8 +41,8 @@ def test_info():
         print(f"   ❌ Error: {e}")
         return False
 
-def test_predict_mock():
-    """Test predict endpoint with mock data (will fail without model)"""
+def check_predict_mock():
+    """Test predict endpoint with mock data (will fail without model) (not a pytest test)"""
     print("\n🔍 Testing /api/predict...")
     
     # Create a minimal test image (1x1 pixel red image in base64)
@@ -83,9 +86,9 @@ def main():
     print("=" * 50)
     
     results = []
-    results.append(("Health Check", test_health()))
-    results.append(("Model Info", test_info()))
-    results.append(("Predict (Mock)", test_predict_mock()))
+    results.append(("Health Check", check_health()))
+    results.append(("Model Info", check_info()))
+    results.append(("Predict (Mock)", check_predict_mock()))
     
     print("\n" + "=" * 50)
     print("Test Results")

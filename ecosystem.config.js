@@ -1,10 +1,12 @@
+const path = require('path');
+
 module.exports = {
 	apps: [
 		{
 			name: "reluray-api",
 			script: "app.py",
-			interpreter: "/home/isaac/reluray/backend/venv/bin/python",
-			cwd: "/home/isaac/reluray/backend",
+			interpreter: path.join(__dirname, "backend", "venv", "bin", "python"),
+			cwd: path.join(__dirname, "backend"),
 			env: {
 				PORT: 5001,
 				MODEL_VERSION: "1.0.0"
@@ -14,7 +16,7 @@ module.exports = {
 			name: "reluray-web",
 			script: "npm",
 			args: "start -- -p 3001",
-			cwd: "/home/isaac/reluray/frontend",
+			cwd: path.join(__dirname, "frontend"),
 			env: {
 				NODE_ENV: "production",
 				NEXT_PUBLIC_API_URL: "/api"

@@ -1,0 +1,368 @@
+name: Automated Testing on PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+
+jobs:
+  pre-flight-checks:
+    runs-on: ubuntu-latest
+    name: Pre-flight Checks
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Check for required files
+      run: |
+        echo "Checking for required files..."
+        required_files=(
+          "backend/app.py"
+          "requirements.txt"
+          "frontend/package.json"
+          "README.md"
+        )
+        
+        for file in "${required_files[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file exists"
+          else
+            echo "❌ $file is missing"
+            exit 1
+          fi
+        done
+    
+    - name: Check code quality
+      run: |
+        echo "Checking code quality..."
+        
+        # Check Python files for basic syntax
+        find backend -name "*.py" -exec python -m py_compile {} \;
+        echo "✅ Python files compile successfully"
+        
+        # Check for TODO/FIXME comments
+        if grep -r "TODO\|FIXME" --include="*.py" --include="*.js" --include="*.ts" --include="*.tsx" .; then
+          echo "⚠️ Found TODO/FIXME comments"
+        else
+          echo "✅ No TODO/FIXME comments found"
+        fi
+
+  backend-tests:
+    runs-on: ubuntu-latest
+    name: Backend Tests
+    needs: pre-flight-checks
+    
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov pytest-asyncio httpx flake8 black isort
+    
+    - name: Code formatting check
+      run: |
+        black --check backend/
+        isort --check-only backend/
+    
+    - name: Linting
+      run: |
+        flake8 backend/ --max-line-length=127 --extend-ignore=E203,W503
+    
+    - name: Type checking
+      run: |
+        pip install mypy
+        mypy backend/ --ignore-missing-imports || true
+    
+    - name: Run unit tests
+      run: |
+        cd backend
+        python -m pytest ../tests/ -v --cov=. --cov-report=xml --cov-report=html
+    
+    - name: Test API endpoints
+      run: |
+        python -c "
+        import subprocess
+        import time
+        import requests
+        
+        # Start the server
+        server = subprocess.Popen(['python', 'app.py'], cwd='backend')
+        time.sleep(10)
+        
+        try:
+            # Test health endpoint
+            response = requests.get('http://localhost:5001/api/health', timeout=5)
+            assert response.status_code == 200
+            print('✅ Health endpoint working')
+            
+            # Test info endpoint
+            response = requests.get('http://localhost:5001/api/info', timeout=5)
+            assert response.status_code == 200
+            print('✅ Info endpoint working')
+            
+        finally:
+            server.terminate()
+            server.wait()
+        "
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend/coverage.xml
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    name: Frontend Tests
+    needs: pre-flight-checks
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Type checking
+      run: |
+        cd frontend
+        npm run type-check || echo "Type check not configured"
+    
+    - name: Linting
+      run: |
+        cd frontend
+        npm run lint || echo "Lint not configured"
+    
+    - name: Build test
+      run: |
+        cd frontend
+        npm run build
+    
+    - name: Check bundle size
+      run: |
+        cd frontend/.next
+        echo "Build size:"
+        du -sh .
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    name: Integration Tests
+    needs: [backend-tests, frontend-tests]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio httpx requests
+    
+    - name: Run integration tests
+      run: |
+        cd backend
+        python app.py &
+        SERVER_PID=$!
+        sleep 15
+        
+        # Run the existing API tests
+        cd ../tests
+        python test_api.py
+        
+        # Kill the server
+        kill $SERVER_PID
+    
+    - name: Test model loading
+      run: |
+        cd backend
+        python -c "
+        import sys
+        sys.path.append('.')
+        from app import model_manager
+        
+        # Test model manager
+        model = model_manager.get_model()
+        print(f'Model loaded: {model is not None}')
+        
+        if model is not None:
+            print('✅ Model loading successful')
+            print(f'Model input shape: {model.input_shape}')
+            print(f'Model output shape: {model.output_shape}')
+        else:
+            print('⚠️ Model not loaded (expected in CI)')
+        "
+
+  performance-tests:
+    runs-on: ubuntu-latest
+    name: Performance Tests
+    needs: integration-tests
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-benchmark requests
+    
+    - name: Run performance tests
+      run: |
+        cd backend
+        python app.py &
+        SERVER_PID=$!
+        sleep 15
+        
+        cd ../tests
+        python -c "
+        import requests
+        import time
+        import statistics
+        
+        # Test API response times
+        times = []
+        for i in range(10):
+            start = time.time()
+            response = requests.get('http://localhost:5001/api/health', timeout=5)
+            if response.status_code == 200:
+                times.append(time.time() - start)
+        
+        if times:
+            avg_time = statistics.mean(times)
+            max_time = max(times)
+            print(f'Average response time: {avg_time:.3f}s')
+            print(f'Max response time: {max_time:.3f}s')
+            
+            if avg_time > 1.0:
+                print('⚠️ Slow API response times')
+            else:
+                print('✅ Good API response times')
+        "
+        
+        kill $SERVER_PID
+
+  security-tests:
+    runs-on: ubuntu-latest
+    name: Security Tests
+    needs: pre-flight-checks
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run security scan
+      run: |
+        pip install safety bandit
+        safety check -r requirements.txt || echo "Safety check completed"
+        bandit -r backend/ -f json || echo "Bandit scan completed"
+    
+    - name: Check for secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+
+  pr-comment:
+    runs-on: ubuntu-latest
+    name: PR Comment
+    needs: [backend-tests, frontend-tests, integration-tests, security-tests]
+    if: always()
+    
+    steps:
+    - name: Comment on PR
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && 
+            comment.body.includes('🤖 Automated Test Results')
+          );
+          
+          const backendStatus = '${{ needs.backend-tests.result }}';
+          const frontendStatus = '${{ needs.frontend-tests.result }}';
+          const integrationStatus = '${{ needs.integration-tests.result }}';
+          const securityStatus = '${{ needs.security-tests.result }}';
+          
+          const statusEmoji = (status) => {
+            if (status === 'success') return '✅';
+            if (status === 'failure') return '❌';
+            if (status === 'skipped') return '⏭️';
+            return '⏳';
+          };
+          
+          const comment = `
+          🤖 Automated Test Results
+          
+          **Backend Tests:** ${statusEmoji(backendStatus)} ${backendStatus}
+          **Frontend Tests:** ${statusEmoji(frontendStatus)} ${frontendStatus}
+          **Integration Tests:** ${statusEmoji(integrationStatus)} ${integrationStatus}
+          **Security Tests:** ${statusEmoji(securityStatus)} ${securityStatus}
+          
+          ---
+          *This comment was automatically generated by GitHub Actions*
+          `;
+          
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              comment_id: botComment.id,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } else {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          }
