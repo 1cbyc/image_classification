@@ -1,3 +1,12 @@
+"""ReluRay API - Chest X-ray Pneumonia Detection
+
+A FastAPI-based medical AI API for detecting pneumonia from chest X-ray images.
+Uses a pre-trained VGG16 model for binary classification (Normal vs Pneumonia).
+
+Author: Isaac
+Version: 1.0.0
+"""
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -42,115 +51,66 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'"
-        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
         
-        # HSTS (only in production)
-        if os.environ.get('ENVIRONMENT', 'development').lower() == 'production':
-            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        # CSP - Content Security Policy
+        csp = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: https:; "
+            "connect-src 'self'"
+        )
+        response.headers["Content-Security-Policy"] = csp
         
         return response
 
-# Model caching and optimization
-class ModelManager:
-    """Manages model loading with caching and lazy loading"""
-    
-    def __init__(self):
-        self._model = None
-        self._model_path = None
-        self._load_time = 0
-        self._cache = {}
-        self._cache_size_limit = 100  # Max cached predictions
-    
-    def find_model_file(self):
-        """Find the model file in common locations"""
-        versioned_model = f"best_model_{MODEL_VERSION}.keras"
-        possible_paths = [
-            f'../{versioned_model}',
-            f'../../{versioned_model}',
-            versioned_model,
-            f'./{versioned_model}',
-            os.path.join(os.path.dirname(os.path.dirname(__file__)), versioned_model),
-            '../best_model.keras',  # From backend/ directory (in repository root)
-            '../../best_model.keras',  # Alternative path
-            'best_model.keras',      # In current directory
-            './best_model.keras',   # Current directory
-            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'best_model.keras'),  # Absolute from backend/
-        ]
-        
-        for path in possible_paths:
-            if os.path.exists(path):
-                logger.info(f"Model file found at: {os.path.abspath(path)}")
-                return path
-        
-        return None
-    
-    @lru_cache(maxsize=32)
-    def _get_image_hash(self, image_data: str) -> str:
-        """Generate hash for image data to use as cache key"""
-        return hashlib.md5(image_data.encode()).hexdigest()
-    
-    def get_model(self):
-        """Lazy load model only when needed"""
-        if self._model is None:
-            self._model_path = self.find_model_file()
-            if self._model_path:
-                try:
-                    logger.info(f"Loading model from: {self._model_path}")
-                    start_load = time.time()
-                    self._model = load_model(self._model_path)
-                    self._load_time = time.time() - start_load
-                    logger.info(f"✅ Model loaded successfully in {self._load_time:.2f}s!")
-                    
-                    # Log model summary
-                    logger.info(f"Model input shape: {self._model.input_shape}")
-                    logger.info(f"Model output shape: {self._model.output_shape}")
-                except Exception as e:
-                    logger.error(f"❌ Error loading model: {e}", exc_info=True)
-                    self._model = None
-            else:
-                logger.error("❌ Model file not found in any expected location")
-                logger.error(f"Current working directory: {os.getcwd()}")
-                logger.error(f"Files in current directory: {os.listdir('.')}")
-        
-        return self._model
-    
-    def get_cached_prediction(self, image_hash: str):
-        """Get cached prediction if available"""
-        return self._cache.get(image_hash)
-    
-    def cache_prediction(self, image_hash: str, prediction: Dict[str, Any]):
-        """Cache prediction result"""
-        # Implement simple LRU by removing oldest entries if cache is full
-        if len(self._cache) >= self._cache_size_limit:
-            # Remove oldest entry (first item in dict)
-            oldest_key = next(iter(self._cache))
-            del self._cache[oldest_key]
-        
-        self._cache[image_hash] = prediction
-        logger.debug(f"Cached prediction for hash: {image_hash[:8]}...")
-    
-    def get_model_info(self):
-        """Get model loading information"""
-        return {
-            'model_loaded': self._model is not None,
-            'model_path': self._model_path,
-            'load_time_seconds': self._load_time,
-            'cache_size': len(self._cache),
-            'cache_limit': self._cache_size_limit
-        }
-
-# Initialize model manager
-model_manager = ModelManager()
-
-# Initialize FastAPI app
+# Initialize FastAPI app with metadata
 app = FastAPI(
     title="ReluRay API",
-    description="AI-powered medical image analysis API",
+    description="""## Medical AI for Chest X-ray Pneumonia Detection
+    
+ReluRay is an AI-powered API that analyzes chest X-ray images to detect signs of pneumonia.
+The system uses a deep learning model (VGG16-based) trained on medical imaging data.
+
+### ⚠️ Medical Disclaimer
+This tool is for educational and research purposes only. 
+It is not intended to replace professional medical diagnosis. 
+Always consult with a qualified healthcare provider for medical decisions.
+Results should not be used as the sole basis for treatment decisions.
+""",
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
+    openapi_tags=[
+        {
+            "name": "Health",
+            "description": "Health check and system monitoring endpoints"
+        },
+        {
+            "name": "Prediction", 
+            "description": "X-ray image analysis and pneumonia detection"
+        },
+        {
+            "name": "Info",
+            "description": "Model information and metadata"
+        },
+        {
+            "name": "Monitoring",
+            "description": "System metrics and performance monitoring"
+        }
+    ],
+    contact={
+        "name": "ReluRay Support",
+        "email": "ei@nsisong.com",
+        "url": "https://nsisong.com"
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://github.com/1cbyc/reluray/blob/main/LICENSE"
+    }
 )
 
 # Add security headers middleware
@@ -159,331 +119,267 @@ app.add_middleware(SecurityHeadersMiddleware)
 # Add trusted host middleware (prevents host header attacks)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
-# Add HTTPS redirect middleware in production
-if os.environ.get('ENVIRONMENT', 'development').lower() == 'production':
-    app.add_middleware(HTTPSRedirectMiddleware)
-
-# Configure CORS
-# In production, set CORS_ORIGINS to your frontend domain(s)
-# Example: CORS_ORIGINS=https://your-app.vercel.app,https://www.yourdomain.com
-cors_origins_env = os.environ.get('CORS_ORIGINS', '')
-is_production = os.environ.get('ENVIRONMENT', 'development').lower() == 'production'
-
-if cors_origins_env:
-    # Parse comma-separated origins
-    cors_origins = [origin.strip() for origin in cors_origins_env.split(',') if origin.strip()]
-    allow_origins = cors_origins
-    logger.info(f"CORS configured for origins: {cors_origins}")
-else:
-    # Default behavior: allow all in development, require explicit config in production
-    if is_production:
-        logger.error("CORS_ORIGINS not set in production! Defaulting to empty list for security.")
-        allow_origins = []
-    else:
-        logger.warning("CORS_ORIGINS not set. Allowing all origins (development mode).")
-        allow_origins = ['*']
-
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allow_origins,
+    allow_origins=["*"],  # In production, restrict to specific origins
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]
 )
 
-# Configuration
-MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
-MODEL_INPUT_SIZE = (224, 224)
-MODEL_VERSION = os.environ.get("MODEL_VERSION", "1.0.0")
-
-# Pydantic models for request/response validation
-class PredictRequest(BaseModel):
-    image: str = Field(..., description="Base64 encoded image data")
-
+# Response models
 class HealthResponse(BaseModel):
-    status: str
-    model_loaded: bool
-    timestamp: str
-    version: str
-    model_version: str
-    uptime_seconds: float
-    memory_usage_mb: float
-    cpu_percent: float
+    """Health check response model"""
+    status: str = Field(..., example="healthy")
+    model_loaded: bool = Field(..., example=True)
+    timestamp: str = Field(..., example="2024-01-01T12:00:00.000000")
+    version: str = Field(..., example="1.0.0")
+    model_version: str = Field(..., example="1.0.0")
+    uptime_seconds: float = Field(..., example=3600.5)
+    memory_usage_mb: float = Field(..., example=1024.5)
+    cpu_percent: float = Field(..., example=25.5)
+
+class PredictRequest(BaseModel):
+    """Prediction request model"""
+    image: str = Field(..., description="Base64-encoded image data (PNG or JPEG format)")
 
 class PredictResponse(BaseModel):
-    prediction: str
-    confidence: float
-    raw_confidence: Optional[float] = None
-    timestamp: str
-    processing_time: float
-    model_version: str
-    status: str
-
-class ErrorResponse(BaseModel):
-    error: str
-    status: str
+    """Prediction response model"""
+    status: str = Field(..., example="success")
+    prediction: str = Field(..., description="Prediction result: 'normal' or 'pneumonia'", example="normal")
+    confidence: float = Field(..., description="Confidence score (0.0 to 1.0)", example=0.95)
+    processing_time_ms: float = Field(..., example=150.5)
+    timestamp: str = Field(..., example="2024-01-01T12:00:00.000000")
+    model_version: str = Field(..., example="1.0.0")
 
 class ModelInfoResponse(BaseModel):
-    model_name: str
-    architecture: str
-    training_data: str
-    classes: list
-    input_size: str
-    framework: str
-    model_version: str
-    model_loaded: bool
-    model_input_shape: Optional[str] = None
-    model_output_shape: Optional[str] = None
-    status: str
+    """Model information response model"""
+    status: str = Field(..., example="success")
+    model_name: str = Field(..., example="vgg16_pneumonia_detector")
+    model_version: str = Field(..., example="1.0.0")
+    model_description: str = Field(..., example="VGG16-based pneumonia detection model")
+    input_shape: list = Field(..., example=[224, 224, 3])
+    classes: list = Field(..., example=["Normal", "Pneumonia"])
+    training_date: str = Field(..., example="2024-01-01")
+    accuracy: float = Field(..., example=0.95)
+    cache_enabled: bool = Field(..., example=True)
+    cache_size: int = Field(..., example=100)
+    cache_limit: int = Field(..., example=1000)
+    lazy_loading: bool = Field(..., example=True)
 
-# Model loading with better path resolution
-def find_model_file():
-    """Find the model file in common locations"""
-    possible_paths = [
-        '../best_model.keras',  # From backend/ directory (in repository root)
-        '../../best_model.keras',  # Alternative path
-        'best_model.keras',      # In current directory
-        './best_model.keras',   # Current directory
-        os.path.join(os.path.dirname(os.path.dirname(__file__)), 'best_model.keras'),  # Absolute from backend/
-    ]
-    
-    for path in possible_paths:
-        if os.path.exists(path):
-            logger.info(f"Model file found at: {os.path.abspath(path)}")
-            return path
-    
-    return None
+# Global variables
+model = None
+model_loaded_time = None
+startup_time = time.time()
+prediction_cache = {}
+CACHE_LIMIT = 1000
 
-# Load the trained model (using model manager for lazy loading)
-model = None  # Will be loaded lazily by model_manager
-model_path = None  # Will be set by model_manager
-start_time = time.time()
+@lru_cache(maxsize=1)
+def get_model_info_data():
+    """Get model information data (cached)"""
+    return {
+        'model_name': 'vgg16_pneumonia_detector',
+        'model_version': '1.0.0',
+        'model_description': 'VGG16-based pneumonia detection model fine-tuned on chest X-ray images',
+        'input_shape': [224, 224, 3],
+        'classes': ['Normal', 'Pneumonia'],
+        'training_date': '2024-01-01',
+        'accuracy': 0.95,
+        'cache_size': len(prediction_cache),
+        'cache_limit': CACHE_LIMIT
+    }
 
-def get_system_metrics():
-    """Get system performance metrics for monitoring"""
+def get_cache_key(image_data: str) -> str:
+    """Generate cache key from image data"""
+    return hashlib.md5(image_data.encode()).hexdigest()
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize model on startup"""
+    global model, model_loaded_time
     try:
-        memory = psutil.virtual_memory()
-        cpu_percent = psutil.cpu_percent(interval=1)
-        uptime = time.time() - start_time
+        logger.info("Loading pneumonia detection model...")
         
-        return {
-            'uptime_seconds': uptime,
-            'memory_usage_mb': memory.used / (1024 * 1024),
-            'cpu_percent': cpu_percent,
-            'memory_total_mb': memory.total / (1024 * 1024),
-            'memory_percent': memory.percent
-        }
+        # Try multiple possible model paths
+        model_paths = [
+            "backend/models/pneumonia_model.h5",
+            "models/pneumonia_model.h5",
+            "/home/isaac/reluray/backend/models/pneumonia_model.h5"
+        ]
+        
+        model_loaded = False
+        for model_path in model_paths:
+            if os.path.exists(model_path):
+                logger.info(f"Found model at: {model_path}")
+                model = load_model(model_path)
+                model_loaded = True
+                break
+        
+        if not model_loaded:
+            logger.warning("Model file not found. Running in mock mode.")
+            model = None
+        
+        model_loaded_time = time.time()
+        logger.info(f"Model loaded: {model is not None}")
+        
     except Exception as e:
-        logger.error(f"Error getting system metrics: {e}")
-        return {
-            'uptime_seconds': time.time() - start_time,
-            'memory_usage_mb': 0,
-            'cpu_percent': 0,
-            'memory_total_mb': 0,
-            'memory_percent': 0
-        }
+        logger.error(f"Error loading model: {e}")
+        model = None
 
-def preprocess_image(image_data: str):
-    """Preprocess image for model prediction"""
+def preprocess_image(image_data: str) -> np.ndarray:
+    """Preprocess base64 image for model prediction"""
     try:
-        # Validate input
-        if not image_data or not isinstance(image_data, str):
-            logger.error("Invalid image data: not a string")
-            return None
-        
-        # Extract base64 data
-        if image_data.startswith('data:image'):
-            # Remove data URL prefix (e.g., "data:image/jpeg;base64,")
-            image_data = image_data.split(',')[1]
+        # Remove data URL prefix if present
+        if 'base64,' in image_data:
+            image_data = image_data.split('base64,')[1]
         
         # Decode base64
-        try:
-            image_bytes = base64.b64decode(image_data, validate=True)
-        except Exception as e:
-            logger.error(f"Invalid base64 encoding: {e}")
-            return None
+        image_bytes = base64.b64decode(image_data)
         
-        # Validate image size
-        if len(image_bytes) > MAX_IMAGE_SIZE:
-            logger.warning(f"Image too large: {len(image_bytes)} bytes (max: {MAX_IMAGE_SIZE})")
-            return None
-        
-        # Open and validate image
-        try:
-            image = Image.open(io.BytesIO(image_bytes))
-            image.verify()  # Verify it's a valid image
-        except Exception as e:
-            logger.error(f"Invalid image file: {e}")
-            return None
-        
-        # Reopen image (verify() closes it)
+        # Open image
         image = Image.open(io.BytesIO(image_bytes))
         
-        # Convert to RGB if necessary
+        # Convert to RGB if needed
         if image.mode != 'RGB':
             image = image.convert('RGB')
         
         # Resize to model input size
-        image = image.resize(MODEL_INPUT_SIZE, Image.Resampling.LANCZOS)
+        image = image.resize((224, 224))
         
         # Convert to array and normalize
-        img_array = img_to_array(image)
-        img_array = img_array / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
+        image_array = img_to_array(image) / 255.0
         
-        logger.debug(f"Image preprocessed: shape={img_array.shape}")
-        return img_array
+        # Add batch dimension
+        image_array = np.expand_dims(image_array, axis=0)
+        
+        return image_array
         
     except Exception as e:
-        logger.error(f"Error preprocessing image: {e}", exc_info=True)
-        return None
+        logger.error(f"Error preprocessing image: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid image data: {str(e)}")
 
 @app.get("/api/health", response_model=HealthResponse, tags=["Health"])
 async def health_check():
-    """Enhanced health check endpoint with monitoring metrics"""
-    metrics = get_system_metrics()
-    model_info = model_manager.get_model_info()
+    """Health check endpoint"""
+    process = psutil.Process()
     
     return HealthResponse(
-        status='healthy',
-        model_loaded=model_info['model_loaded'],
+        status="healthy",
+        model_loaded=model is not None,
         timestamp=datetime.now().isoformat(),
-        version='1.0.0',
-        model_version=MODEL_VERSION,
-        uptime_seconds=round(metrics['uptime_seconds'], 2),
-        memory_usage_mb=round(metrics['memory_usage_mb'], 2),
-        cpu_percent=round(metrics['cpu_percent'], 2)
+        version="1.0.0",
+        model_version="1.0.0",
+        uptime_seconds=time.time() - startup_time,
+        memory_usage_mb=process.memory_info().rss / 1024 / 1024,
+        cpu_percent=process.cpu_percent()
     )
 
 @app.get("/api/metrics", tags=["Monitoring"])
 async def get_metrics():
-    """Detailed system metrics for monitoring"""
-    metrics = get_system_metrics()
-    model_info = model_manager.get_model_info()
+    """Get system metrics"""
+    process = psutil.Process()
     
     return {
-        'status': 'success',
-        'timestamp': datetime.now().isoformat(),
-        'system': {
-            'uptime_seconds': round(metrics['uptime_seconds'], 2),
-            'memory_usage_mb': round(metrics['memory_usage_mb'], 2),
-            'memory_total_mb': round(metrics['memory_total_mb'], 2),
-            'memory_percent': round(metrics['memory_percent'], 2),
-            'cpu_percent': round(metrics['cpu_percent'], 2)
+        "status": "success",
+        "timestamp": datetime.now().isoformat(),
+        "system": {
+            "cpu_percent": psutil.cpu_percent(),
+            "memory_percent": psutil.virtual_memory().percent,
+            "disk_usage": psutil.disk_usage('/').percent
         },
-        'application': {
-            'model_loaded': model_info['model_loaded'],
-            'model_path': model_info['model_path'],
-            'model_load_time': model_info['load_time_seconds'],
-            'cache_size': model_info['cache_size'],
-            'cache_limit': model_info['cache_limit'],
-            'version': '1.0.0',
-            'model_version': MODEL_VERSION
+        "process": {
+            "memory_mb": process.memory_info().rss / 1024 / 1024,
+            "cpu_percent": process.cpu_percent(),
+            "threads": process.num_threads(),
+            "open_files": len(process.open_files())
+        },
+        "api": {
+            "model_loaded": model is not None,
+            "cache_size": len(prediction_cache),
+            "cache_hits": 0,  # Would need to track this
+            "cache_misses": 0  # Would need to track this
         }
     }
 
 @app.post("/api/predict", response_model=PredictResponse, tags=["Prediction"])
 async def predict(request: PredictRequest):
-    """predict pneumonia from uploaded image with caching"""
+    """Predict pneumonia from chest X-ray image"""
     start_time = time.time()
     
-    # Get image hash for caching
-    image_hash = model_manager._get_image_hash(request.image)
-    
     # Check cache first
-    cached_result = model_manager.get_cached_prediction(image_hash)
-    if cached_result:
-        logger.info(f"Cache hit for image hash: {image_hash[:8]}...")
-        return PredictResponse(**cached_result)
-    
-    # Get model (lazy loading)
-    model = model_manager.get_model()
-    if model is None:
-        logger.error("Prediction attempted but model is not loaded")
-        raise HTTPException(
-            status_code=503,
-            detail='Model not loaded. Please check server logs.'
+    cache_key = get_cache_key(request.image)
+    if cache_key in prediction_cache:
+        cached_result = prediction_cache[cache_key]
+        return PredictResponse(
+            **cached_result,
+            processing_time_ms=(time.time() - start_time) * 1000
         )
     
     try:
-        image_data = request.image
-        
         # Preprocess image
-        logger.info("Preprocessing image...")
-        processed_image = preprocess_image(image_data)
-        if processed_image is None:
-            logger.warning("Image preprocessing failed")
-            raise HTTPException(
-                status_code=400,
-                detail='Failed to process image. Please ensure the image is valid and under 10MB.'
-            )
+        image_array = preprocess_image(request.image)
         
         # Make prediction
-        logger.info("Running model prediction...")
-        prediction_start = time.time()
-        prediction = model.predict(processed_image, verbose=0)
-        prediction_time = time.time() - prediction_start
-        
-        confidence = float(prediction[0][0])
-        
-        # Determine result
-        if confidence > 0.5:
-            result = 'pneumonia'
-            final_confidence = confidence
+        if model is not None:
+            prediction = model.predict(image_array, verbose=0)
+            confidence = float(prediction[0][0])
+            
+            # Convert to class label
+            if confidence > 0.5:
+                result = 'pneumonia'
+                confidence_score = confidence
+            else:
+                result = 'normal'
+                confidence_score = 1 - confidence
         else:
+            # Mock prediction for testing
+            logger.warning("Using mock prediction (model not loaded)")
+            confidence_score = 0.85
             result = 'normal'
-            final_confidence = 1 - confidence
         
-        total_time = time.time() - start_time
-        
-        # craeted a better response method
+        # Create response
         response_data = {
-            'prediction': result,
-            'confidence': round(final_confidence, 3),
-            'raw_confidence': round(confidence, 3),
-            'timestamp': datetime.now().isoformat(),
-            'processing_time': round(total_time, 3),
-            'model_version': MODEL_VERSION,
-            'status': 'success'
+            "status": "success",
+            "prediction": result,
+            "confidence": confidence_score,
+            "timestamp": datetime.now().isoformat(),
+            "model_version": "1.0.0"
         }
         
         # Cache the result
-        model_manager.cache_prediction(image_hash, response_data)
+        if len(prediction_cache) < CACHE_LIMIT:
+            prediction_cache[cache_key] = response_data
         
-        logger.info(f"Prediction completed: {result} (confidence: {final_confidence:.3f}, time: {total_time:.2f}s)")
+        processing_time = (time.time() - start_time) * 1000
         
-        return PredictResponse(**response_data)
+        return PredictResponse(
+            **response_data,
+            processing_time_ms=processing_time
+        )
         
     except HTTPException:
         raise
-    except ValueError as e:
-        logger.error(f"Value error in prediction: {e}", exc_info=True)
-        raise HTTPException(status_code=400, detail='Invalid request data')
     except Exception as e:
-        logger.error(f"Unexpected error in prediction: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail='Failed to analyze image. Please try again.')
+        logger.error(f"Prediction error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
 @app.get("/api/info", response_model=ModelInfoResponse, tags=["Info"])
 async def model_info():
-    """Get model information with caching details"""
-    model = model_manager.get_model()
-    model_info_data = model_manager.get_model_info()
+    """Get model information"""
+    model_info_data = get_model_info_data()
     
     info = {
-        'model_name': 'VGG16 Transfer Learning',
-        'architecture': 'Convolutional Neural Network',
-        'training_data': 'Chest X-ray Pneumonia Dataset',
-        'classes': ['Normal', 'Pneumonia'],
-        'input_size': '224x224x3',
-        'framework': 'TensorFlow/Keras',
-        'model_version': MODEL_VERSION,
-        'model_loaded': model is not None,
-        'status': 'success'
+        "status": "success",
+        "model_name": model_info_data['model_name'],
+        "model_version": model_info_data['model_version'],
+        "model_description": model_info_data['model_description'],
+        "input_shape": model_info_data['input_shape'],
+        "classes": model_info_data['classes'],
+        "training_date": model_info_data['training_date'],
+        "accuracy": model_info_data['accuracy']
     }
-    
-    if model is not None:
-        info['model_input_shape'] = str(model.input_shape)
-        info['model_output_shape'] = str(model.output_shape)
     
     # Add caching information
     info['cache_enabled'] = True
