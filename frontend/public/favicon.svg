@@ -1,4 +1,12 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="6" fill="#000000"/>
-  <text x="16" y="22" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF" text-anchor="middle">R</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Professional healthcare icon from Flaticon -->
+  <title>ReluRay Medical AI</title>
+  <desc>Healthcare and medical analysis icon</desc>
+  <style>
+    .health-icon { fill: #3b82f6; }
+    @media (prefers-color-scheme: dark) {
+      .health-icon { fill: #60a5fa; }
+    }
+  </style>
+  <path class="health-icon" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"/>
 </svg>

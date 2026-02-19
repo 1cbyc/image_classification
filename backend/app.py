@@ -146,10 +146,66 @@ model_manager = ModelManager()
 # Initialize FastAPI app
 app = FastAPI(
     title="ReluRay API",
-    description="AI-powered medical image analysis API",
+    description="""# ReluRay Medical AI API
+    
+## Overview
+AI-powered medical image analysis API for chest X-ray pneumonia detection. 
+This API provides real-time analysis of chest X-ray images using deep learning models.
+
+## Features
+- **Real-time Analysis**: Get instant pneumonia detection results
+- **High Accuracy**: VGG16-based model trained on medical datasets
+- **Privacy Focused**: Images processed locally, not stored on servers
+- **Production Ready**: Built with FastAPI, includes monitoring and caching
+
+## Authentication
+Currently no authentication required for public endpoints.
+
+## Rate Limiting
+Default rate limit: 10 requests per minute per IP address.
+
+## Base URL
+`https://reluray.com/api`
+
+## Support
+For API support, contact: ei@nsisong.com
+
+## Important Medical Disclaimer
+⚠️ **This tool is for educational and research purposes only.**
+It is not intended to replace professional medical diagnosis. 
+Always consult with a qualified healthcare provider for medical decisions.
+Results should not be used as the sole basis for treatment decisions.
+""",
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
+    openapi_tags=[
+        {
+            "name": "Health",
+            "description": "Health check and system monitoring endpoints"
+        },
+        {
+            "name": "Prediction", 
+            "description": "X-ray image analysis and pneumonia detection"
+        },
+        {
+            "name": "Info",
+            "description": "Model information and metadata"
+        },
+        {
+            "name": "Monitoring",
+            "description": "System metrics and performance monitoring"
+        }
+    ],
+    contact={
+        "name": "ReluRay Support",
+        "email": "ei@nsisong.com",
+        "url": "https://nsisong.com"
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://github.com/1cbyc/reluray/blob/main/LICENSE"
+    }
 )
 
 # Add security headers middleware
@@ -197,43 +253,88 @@ MODEL_VERSION = os.environ.get("MODEL_VERSION", "1.0.0")
 
 # Pydantic models for request/response validation
 class PredictRequest(BaseModel):
-    image: str = Field(..., description="Base64 encoded image data")
+    """Request model for X-ray image analysis"""
+    image: str = Field(
+        ...,
+        description="""Base64 encoded image data with data URI prefix.
+        
+        **Format**: `data:image/{format};base64,{base64_encoded_data}`
+        
+        **Supported formats**: JPEG, PNG, GIF, BMP
+        
+        **Maximum size**: 10MB
+        
+        **Example**:
+        ```json
+        {
+            "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        }
+        ```
+        """,
+        example="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    )
 
 class HealthResponse(BaseModel):
-    status: str
-    model_loaded: bool
-    timestamp: str
-    version: str
-    model_version: str
-    uptime_seconds: float
-    memory_usage_mb: float
-    cpu_percent: float
+    """Health check response with system metrics"""
+    status: str = Field(..., description="Service status: 'healthy' or 'unhealthy'", example="healthy")
+    model_loaded: bool = Field(..., description="Whether the ML model is loaded and ready", example=True)
+    timestamp: str = Field(..., description="ISO 8601 timestamp of the check", example="2024-01-01T12:00:00.000000")
+    version: str = Field(..., description="API version", example="1.0.0")
+    model_version: str = Field(..., description="ML model version", example="1.0.0")
+    uptime_seconds: float = Field(..., description="Service uptime in seconds", example=12345.67)
+    memory_usage_mb: float = Field(..., description="Memory usage in megabytes", example=256.89)
+    cpu_percent: float = Field(..., description="CPU usage percentage", example=12.5)
 
 class PredictResponse(BaseModel):
-    prediction: str
-    confidence: float
-    raw_confidence: Optional[float] = None
-    timestamp: str
-    processing_time: float
-    model_version: str
-    status: str
+    """Prediction response for X-ray analysis"""
+    prediction: str = Field(
+        ...,
+        description="""Prediction result.
+        
+        **Possible values**:
+        - `normal`: No signs of pneumonia detected
+        - `pneumonia`: Signs of pneumonia detected
+        - `error`: Analysis failed
+        """,
+        example="normal"
+    )
+    confidence: float = Field(
+        ...,
+        description="Confidence score between 0 and 1 (higher is more confident)",
+        example=0.95,
+        ge=0.0,
+        le=1.0
+    )
+    raw_confidence: Optional[float] = Field(
+        None,
+        description="Raw model output confidence (if available)",
+        example=0.8723,
+        ge=0.0,
+        le=1.0
+    )
+    timestamp: str = Field(..., description="ISO 8601 timestamp of the analysis", example="2024-01-01T12:00:00.000000")
+    processing_time: float = Field(..., description="Processing time in seconds", example=1.23)
+    model_version: str = Field(..., description="ML model version used", example="1.0.0")
+    status: str = Field(..., description="Request status: 'success' or 'error'", example="success")
 
 class ErrorResponse(BaseModel):
-    error: str
-    status: str
+    """Error response for failed requests"""
+    error: str = Field(..., description="Error message describing what went wrong", example="Invalid image format")
+    status: str = Field(..., description="Always 'error' for error responses", example="error")
 
 class ModelInfoResponse(BaseModel):
-    model_name: str
-    architecture: str
-    training_data: str
-    classes: list
-    input_size: str
-    framework: str
-    model_version: str
-    model_loaded: bool
-    model_input_shape: Optional[str] = None
-    model_output_shape: Optional[str] = None
-    status: str
+    """Model information and metadata"""
+    model_name: str = Field(..., description="Name of the ML model", example="VGG16 Pneumonia Detector")
+    architecture: str = Field(..., description="Model architecture", example="VGG16 with custom top layers")
+    training_data: str = Field(..., description="Dataset used for training", example="Chest X-ray Pneumonia Dataset")
+    classes: list = Field(..., description="List of classes the model can predict", example=["normal", "pneumonia"])
+    input_size: str = Field(..., description="Input image dimensions", example="224x224")
+    framework: str = Field(..., description="ML framework used", example="TensorFlow/Keras")
+    model_version: str = Field(..., description="Model version", example="1.0.0")
+    model_loaded: bool = Field(..., description="Whether model is currently loaded", example=True)
+    model_input_shape: Optional[str] = Field(None, description="Detailed input shape", example="(224, 224, 3)")
+    model_output_shape: Optional[str] = Field(None, description="Detailed output shape", example="(1,)")
+    status: str = Field(..., description="Response status", example="success")
 
 # Model loading with better path resolution
 def find_model_file():
@@ -339,7 +440,35 @@ def preprocess_image(image_data: str):
 
 @app.get("/api/health", response_model=HealthResponse, tags=["Health"])
 async def health_check():
-    """Enhanced health check endpoint with monitoring metrics"""
+    """
+    Health Check Endpoint
+    
+    Returns the current health status of the API service along with system metrics.
+    
+    This endpoint is useful for:
+    - Monitoring service availability
+    - Checking if the ML model is loaded
+    - Getting system resource usage
+    - Implementing health checks in load balancers or monitoring systems
+    
+    **Response Codes**:
+    - `200`: Service is healthy
+    - `500`: Service is unhealthy (internal server error)
+    
+    **Example Response**:
+    ```json
+    {
+        "status": "healthy",
+        "model_loaded": true,
+        "timestamp": "2024-01-01T12:00:00.000000",
+        "version": "1.0.0",
+        "model_version": "1.0.0",
+        "uptime_seconds": 12345.67,
+        "memory_usage_mb": 256.89,
+        "cpu_percent": 12.5
+    }
+    ```
+    """
     metrics = get_system_metrics()
     model_info = model_manager.get_model_info()
     
@@ -356,7 +485,48 @@ async def health_check():
 
 @app.get("/api/metrics", tags=["Monitoring"])
 async def get_metrics():
-    """Detailed system metrics for monitoring"""
+    """
+    Detailed System Metrics
+    
+    Returns comprehensive system and application metrics for monitoring purposes.
+    
+    This endpoint provides more detailed information than the health check endpoint,
+    including cache statistics, model information, and detailed system resource usage.
+    
+    **Use Cases**:
+    - Performance monitoring and alerting
+    - Capacity planning
+    - Debugging performance issues
+    - Monitoring cache effectiveness
+    
+    **Response Structure**:
+    - `system`: Hardware and OS-level metrics
+    - `application`: ReluRay-specific metrics including model and cache info
+    
+    **Example Response**:
+    ```json
+    {
+        "status": "success",
+        "timestamp": "2024-01-01T12:00:00.000000",
+        "system": {
+            "uptime_seconds": 12345.67,
+            "memory_usage_mb": 256.89,
+            "memory_total_mb": 8192.0,
+            "memory_percent": 3.14,
+            "cpu_percent": 12.5
+        },
+        "application": {
+            "model_loaded": true,
+            "model_path": "/home/isaac/reluray/backend/best_model.keras",
+            "model_load_time": 2.34,
+            "cache_size": 45,
+            "cache_limit": 100,
+            "version": "1.0.0",
+            "model_version": "1.0.0"
+        }
+    }
+    ```
+    """
     metrics = get_system_metrics()
     model_info = model_manager.get_model_info()
     
@@ -381,9 +551,69 @@ async def get_metrics():
         }
     }
 
-@app.post("/api/predict", response_model=PredictResponse, tags=["Prediction"])
+@app.post("/api/predict", response_model=PredictResponse, tags=["Prediction"], responses={
+    200: {"description": "Successful prediction", "model": PredictResponse},
+    400: {"description": "Bad request - invalid image or parameters", "model": ErrorResponse},
+    413: {"description": "Payload too large - image exceeds 10MB limit"},
+    429: {"description": "Too many requests - rate limit exceeded"},
+    500: {"description": "Internal server error", "model": ErrorResponse},
+    503: {"description": "Service unavailable - model not loaded", "model": ErrorResponse}
+})
 async def predict(request: PredictRequest):
-    """predict pneumonia from uploaded image with caching"""
+    """
+    Analyze Chest X-ray Image
+    
+    Analyzes a chest X-ray image for signs of pneumonia using AI.
+    
+    This is the main endpoint of the ReluRay API. It accepts a base64-encoded
+    X-ray image and returns an analysis with confidence scores.
+    
+    **Medical Disclaimer**: 
+    ⚠️ This tool is for educational and research purposes only.
+    It is not intended to replace professional medical diagnosis.
+    Always consult with a qualified healthcare provider for medical decisions.
+    
+    **Image Requirements**:
+    - Format: JPEG, PNG, GIF, or BMP
+    - Maximum size: 10MB
+    - Must be a valid chest X-ray image
+    - Base64 encoded with data URI prefix
+    
+    **Caching**: 
+    Results are cached based on image hash. Identical images will return
+    cached results for faster response times.
+    
+    **Rate Limiting**:
+    Limited to 10 requests per minute per IP address.
+    
+    **Example Request**:
+    ```json
+    {
+        "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    }
+    ```
+    
+    **Example Success Response**:
+    ```json
+    {
+        "prediction": "normal",
+        "confidence": 0.95,
+        "raw_confidence": 0.872,
+        "timestamp": "2024-01-01T12:00:00.000000",
+        "processing_time": 1.234,
+        "model_version": "1.0.0",
+        "status": "success"
+    }
+    ```
+    
+    **Example Error Response**:
+    ```json
+    {
+        "error": "Invalid image format",
+        "status": "error"
+    }
+    ```
+    """
     start_time = time.time()
     
     # Get image hash for caching
@@ -464,7 +694,43 @@ async def predict(request: PredictRequest):
 
 @app.get("/api/info", response_model=ModelInfoResponse, tags=["Info"])
 async def model_info():
-    """Get model information with caching details"""
+    """
+    Get Model Information
+    
+    Returns detailed information about the ML model used for pneumonia detection.
+    
+    This endpoint provides metadata about the model architecture, training data,
+    capabilities, and current status. Useful for developers integrating with the API
+    or for monitoring model deployment.
+    
+    **Information Included**:
+    - Model architecture and framework
+    - Training dataset details
+    - Input/output specifications
+    - Current loading status
+    - Cache configuration
+    
+    **Example Response**:
+    ```json
+    {
+        "model_name": "VGG16 Transfer Learning",
+        "architecture": "Convolutional Neural Network",
+        "training_data": "Chest X-ray Pneumonia Dataset",
+        "classes": ["Normal", "Pneumonia"],
+        "input_size": "224x224x3",
+        "framework": "TensorFlow/Keras",
+        "model_version": "1.0.0",
+        "model_loaded": true,
+        "model_input_shape": "(224, 224, 3)",
+        "model_output_shape": "(1,)",
+        "status": "success"
+    }
+    ```
+    
+    **Note**: The response includes additional caching-related fields that are
+    not part of the formal ModelInfoResponse schema but provide useful
+    debugging information.
+    """
     model = model_manager.get_model()
     model_info_data = model_manager.get_model_info()
     
